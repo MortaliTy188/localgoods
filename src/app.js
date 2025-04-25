@@ -9,7 +9,6 @@ const productRoutes = require('./routes/productRoutes');
 
 const app = express();
 
-// Middleware для обработки JSON-запросов
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

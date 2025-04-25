@@ -19,7 +19,6 @@ const authenticate = (allowedRoles = []) => {
 
             req.user = decoded;
 
-            // Проверяем role_id
             if (allowedRoles.length > 0 && !allowedRoles.includes(req.user.role_id)) {
                 return res.status(403).json({ message: 'Доступ запрещен. Недостаточно прав.' });
             }
