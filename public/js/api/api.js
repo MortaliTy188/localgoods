@@ -1,47 +1,129 @@
-const API_BASE_URL = 'http://localhost:3000/api/v1/users';
+const API_BASE_URL = 'http://localhost:3000/api/v1';
 
-//REGISTER
-export async function registerUser(userData) {
+// Universal fetch function
+async function fetchAPI(endpoint, method = 'GET', body = null) {
     try {
-        const response = await fetch(`${API_BASE_URL}/register`, {
-            method: 'POST',
+        const options = {
+            method,
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(userData),
-        });
+        };
+
+        if (body) {
+            options.body = JSON.stringify(body);
+        }
+
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || 'Ошибка регистрации');
+            throw new Error(error.message || 'Ошибка сервера');
         }
 
         return await response.json();
     } catch (error) {
-        console.error('Ошибка при регистрации:', error);
+        console.error(`Ошибка при запросе к ${endpoint}:`, error);
         throw error;
     }
 }
 
-// LOGIN
+// Users
+export async function registerUser(userData) {
+    return fetchAPI('/users/register', 'POST', userData);
+}
+
 export async function loginUser(credentials) {
+    return fetchAPI('/users/login', 'POST', credentials);
+}
+
+export async function getAllUsers() {
+    return fetchAPI('/users/all');
+}
+
+export async function getUserById(id) {
+    return fetchAPI(`/users/${id}`);
+}
+
+export async function updateUser(id, userData) {
+    return fetchAPI(`/users/${id}`, 'PUT', userData);
+}
+
+export async function deleteUser(id) {
+    return fetchAPI(`/users/${id}`, 'DELETE');
+}
+
+// Products
+export async function createProduct(productData) {
+    return fetchAPI('/products', 'POST', productData);
+}
+
+export async function getAllProducts() {
+    return fetchAPI('/products');
+}
+
+export async function getProductById(id) {
+    return fetchAPI(`/products/${id}`);
+}
+
+export async function updateProduct(id, productData) {
+    return fetchAPI(`/products/${id}`, 'PUT', productData);
+}
+
+export async function deleteProduct(id) {
+    return fetchAPI(`/products/${id}`, 'DELETE');
+}
+
+export async function getProductsByCategory(category_id) {
+    return fetchAPI(`/products/category/${category_id}`);
+}
+
+export async function uploadProductImage(formData) {
     try {
-        const response = await fetch(`${API_BASE_URL}/login`, {
+        const response = await fetch(`${API_BASE_URL}/products/upload-image`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(credentials),
+            body: formData,
         });
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || 'Ошибка авторизации');
+            throw new Error(error.message || 'Ошибка загрузки изображения');
         }
 
         return await response.json();
     } catch (error) {
-        console.error('Ошибка при авторизации:', error);
+        console.error('Ошибка при загрузке изображения:', error);
         throw error;
     }
+}
+
+// Cart
+export async function addToCart(cartData) {
+    return fetchAPI('/cart/add', 'POST', cartData);
+}
+
+export async function getCartItems(user_id) {
+    return fetchAPI(`/cart/${user_id}`);
+}
+
+export async function removeFromCart(cartData) {
+    return fetchAPI('/cart/remove', 'DELETE', cartData);
+}
+
+// Orders
+export async function createOrder(orderData) {
+    return fetchAPI('/order/create', 'POST', orderData);
+}
+
+// Reviews
+export async function addReview(reviewData) {
+    return fetchAPI('/reviews/add', 'POST', reviewData);
+}
+
+export async function getReviewsByProduct(product_id) {
+    return fetchAPI(`/reviews/${product_id}`);
+}
+
+export async function deleteReview(id) {
+    return fetchAPI(`/reviews/${id}`, 'DELETE');
 }
