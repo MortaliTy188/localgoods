@@ -24,7 +24,7 @@ exports.registerUser = async (req, res) => {
             last_name,
             email,
             password: hashedPassword,
-            role_id: role_id || 1, // Роль по умолчанию
+            role_id: role_id || 1,
         });
 
         return res.status(201).json({

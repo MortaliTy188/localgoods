@@ -99,6 +99,80 @@ const swaggerOptions = {
                         },
                     },
                 },
+                CartItem: {
+                    type: "object",
+                    properties: {
+                        id: {
+                            type: "integer",
+                            description: "ID элемента в корзине",
+                        },
+                        user_id: {
+                            type: "integer",
+                            description: "ID пользователя",
+                        },
+                        product_id: {
+                            type: "integer",
+                            description: "ID продукта",
+                        },
+                        quantity: {
+                            type: "integer",
+                            description: "Количество продукта",
+                        },
+                        product: {
+                            type: "object",
+                            properties: {
+                                name: {
+                                    type: "string",
+                                    description: "Название продукта",
+                                },
+                                price: {
+                                    type: "number",
+                                    format: "float",
+                                    description: "Цена продукта",
+                                },
+                            },
+                        },
+                    },
+                },
+                Order: {
+                    type: "object",
+                    properties: {
+                        id: {
+                            type: "integer",
+                            description: "ID заказа",
+                        },
+                        user_id: {
+                            type: "integer",
+                            description: "ID пользователя",
+                        },
+                        total_price: {
+                            type: "number",
+                            format: "float",
+                            description: "Общая стоимость заказа",
+                        },
+                        status_id: {
+                            type: "integer",
+                            description: "Статус заказа (например, 1 - Новый)",
+                        },
+                    },
+                },
+                OrderItem: {
+                    type: "object",
+                    properties: {
+                        order_id: {
+                            type: "integer",
+                            description: "ID заказа",
+                        },
+                        product_id: {
+                            type: "integer",
+                            description: "ID продукта",
+                        },
+                        quantity: {
+                            type: "integer",
+                            description: "Количество продукта",
+                        },
+                    },
+                },
             },
             securitySchemes: {
                 bearerAuth: {
