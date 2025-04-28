@@ -21,6 +21,9 @@ const orderItemModel = sequelize.define('orderItem', {
         type: DataTypes.INTEGER,
         allowNull: false,
     }
+}, {
+    tableName: "order_item",
+    timestamps: false,
 })
 
 module.exports = orderItemModel;

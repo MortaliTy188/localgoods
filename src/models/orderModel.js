@@ -24,6 +24,7 @@ const Order = sequelize.define('order', {
     }
 }, {
     tableName: 'order',
+    timestamps: false,
 })
 
 module.exports = Order;

@@ -4,7 +4,7 @@ const Product = require('../models/productModel');
  * Создать продукт
  */
 exports.createProduct = async (req, res) => {
-    const { title, description, price, stock, seller_id, category } = req.body;
+    const { title, description, price, stock, seller_id, category_id } = req.body;
 
     try {
         const newProduct = await Product.create({
@@ -13,7 +13,7 @@ exports.createProduct = async (req, res) => {
             price,
             stock,
             seller_id,
-            category,
+            category_id,
         });
 
         return res.status(201).json({
@@ -64,7 +64,7 @@ exports.getProductById = async (req, res) => {
  */
 exports.updateProduct = async (req, res) => {
     const { id } = req.params;
-    const { title, description, price, stock, seller_id, category } = req.body;
+    const { title, description, price, stock, seller_id, category_id } = req.body;
 
     try {
         const product = await Product.findByPk(id);
@@ -79,7 +79,7 @@ exports.updateProduct = async (req, res) => {
             price: price || product.price,
             stock: stock || product.stock,
             seller_id: seller_id || product.seller_id,
-            category: category || product.category,
+            category: category_id || product.category_id,
         });
 
         return res.status(200).json({
@@ -114,11 +114,11 @@ exports.deleteProduct = async (req, res) => {
 };
 
 exports.getProductsByCategory = async (req, res) => {
-    const {category} = req.params; // Получаем категорию из параметров маршрута
+    const {category_id} = req.params;
 
     try {
         const products = await Product.findAll({
-            where: {category}, // Фильтруем по полю категории
+            where: {category_id},
         });
 
         if (products.length === 0) {

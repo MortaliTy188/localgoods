@@ -1,5 +1,5 @@
 const {DataTypes} = require('sequelize')
-const sequelize = require('../config/db.js/')
+const sequelize = require('../config/db')
 
 const Product = sequelize.define('product', {
     title: {
@@ -26,7 +26,7 @@ const Product = sequelize.define('product', {
             key: 'id'
         }
     },
-    category: {
+    category_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -35,7 +35,8 @@ const Product = sequelize.define('product', {
         }
     }
 }, {
-    tableName: 'product'
+    tableName: 'product',
+    timestamps: false
 })
 
 module.exports = Product
