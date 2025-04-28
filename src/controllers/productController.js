@@ -1,4 +1,6 @@
 const Product = require('../models/productModel');
+const path = require('path');
+const fs = require('fs');
 
 /**
  * Создать продукт
@@ -131,3 +133,27 @@ exports.getProductsByCategory = async (req, res) => {
         return res.status(500).json({message: 'Ошибка сервера'});
     }
 }
+
+exports.uploadProductImage = async (req, res) => {
+    const { product_id } = req.body;
+
+    try {
+        const product = await Product.findByPk(product_id);
+        if (!product) {
+            return res.status(404).json({ message: 'Продукт не найден' });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ message: 'Файл не был загружен' });
+        }
+
+        const imagePath = `/uploads/${req.file.filename}`;
+        product.image = imagePath;
+        await product.save();
+
+        return res.status(200).json({ message: 'Изображение успешно загружено', product });
+    } catch (error) {
+        console.error('Ошибка при загрузке изображения:', error);
+        return res.status(500).json({ message: 'Ошибка сервера' });
+    }
+};
