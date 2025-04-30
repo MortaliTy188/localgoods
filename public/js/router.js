@@ -1,10 +1,14 @@
 import { renderLogin } from './components/login.js';
 import { renderRegister } from './components/register.js';
+import { renderCatalog } from './components/catalog.js';
+import {renderGeneral} from "./components/general.js";
 
 export function Router() {
     const routes = {
         '/': renderLogin,
         '/register': renderRegister,
+        '/catalog': renderCatalog,
+        "/general": renderGeneral,
     };
 
     function navigate(path) {
