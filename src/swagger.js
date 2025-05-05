@@ -134,6 +134,15 @@ const swaggerOptions = {
                         },
                     },
                 },
+                Category: {
+                    type: "object",
+                    properties: {
+                        name: {
+                            type: "string",
+                            description: "Название категории",
+                        },
+                    },
+                },
                 Order: {
                     type: "object",
                     properties: {

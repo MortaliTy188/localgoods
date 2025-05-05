@@ -127,3 +127,20 @@ export async function getReviewsByProduct(product_id) {
 export async function deleteReview(id) {
     return fetchAPI(`/reviews/${id}`, 'DELETE');
 }
+
+// Categories
+export async function getAllCategories() {
+    return fetchAPI('/category/all');
+}
+
+export async function addCategory(categoryData) {
+    return fetchAPI('/category/add', 'POST', categoryData);
+}
+
+export async function updateCategory(id, categoryData) {
+    return fetchAPI(`/category/update/${id}`, 'PUT', categoryData);
+}
+
+export async function deleteCategory(id) {
+    return fetchAPI(`/category/delete/${id}`, 'DELETE');
+}

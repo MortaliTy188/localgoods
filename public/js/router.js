@@ -8,7 +8,7 @@ export function Router() {
         '/': renderLogin,
         '/register': renderRegister,
         '/catalog': renderCatalog,
-        "/general": renderGeneral,
+        '/general': renderGeneral,
     };
 
     function navigate(path) {
