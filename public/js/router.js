@@ -2,6 +2,7 @@ import { renderLogin } from './components/login.js';
 import { renderRegister } from './components/register.js';
 import { renderCatalog } from './components/catalog.js';
 import {renderGeneral} from "./components/general.js";
+import {renderUserProfile} from "./components/userProfile.js";
 
 export function Router() {
     const routes = {
@@ -9,6 +10,7 @@ export function Router() {
         '/register': renderRegister,
         '/catalog': renderCatalog,
         '/general': renderGeneral,
+        '/profile': renderUserProfile,
     };
 
     function navigate(path) {

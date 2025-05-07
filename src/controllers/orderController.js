@@ -43,3 +43,31 @@ exports.createOrder = async (req, res) => {
         return res.status(500).json({ message: 'Ошибка сервера' });
     }
 };
+
+/**
+ * Получить все заказы пользователя
+ */
+exports.getUserOrders = async (req, res) => {
+    const userId = req.user.id;
+
+    if (!userId) {
+        return res.status(400).json({ message: 'ID пользователя не предоставлен или не аутентифицирован' });
+    }
+
+    try {
+        const orders = await Order.findAll({
+            where: { user_id: userId },
+            attributes: ['id', 'created_at', 'total_price'],
+            order: [['created_at', 'DESC']],
+        });
+
+        if (!orders || orders.length === 0) {
+            return res.status(200).json([]);
+        }
+
+        return res.status(200).json(orders);
+    } catch (error) {
+        console.error('Ошибка при получении заказов пользователя:', error);
+        return res.status(500).json({ message: 'Ошибка сервера' });
+    }
+};

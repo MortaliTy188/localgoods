@@ -1,5 +1,6 @@
 const express = require('express');
-const { createOrder } = require('../controllers/orderController');
+const { createOrder, getUserOrders } = require('../controllers/orderController');
+const authenticate = require('../middlewares/authenticateJWT');
 const router = express.Router();
 
 /**
@@ -74,5 +75,46 @@ const router = express.Router();
  *                   description: Сообщение об ошибке сервера
  */
 router.post('/create', createOrder);
+
+/**
+ * @swagger
+ * /api/v1/orders:
+ *   get:
+ *     summary: Получить все заказы текущего пользователя
+ *     description: Возвращает список всех заказов, сделанных аутентифицированным пользователем, отсортированных по дате создания (сначала новые).
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: [] # Требует аутентификации
+ *     responses:
+ *       200:
+ *         description: Успешный ответ со списком заказов пользователя
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Order' # Массив объектов Order
+ *       401:
+ *         description: Не авторизован
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Токен не предоставлен или недействителен"
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Ошибка сервера при получении заказов"
+ */
+router.get('/', authenticate([1,2]), getUserOrders);
 
 module.exports = router;

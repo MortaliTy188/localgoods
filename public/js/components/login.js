@@ -1,5 +1,5 @@
 import { loginUser } from '../api/api.js';
-import { isLoggedIn } from '../auth/auth.js'; // Import isLoggedIn function
+import { isLoggedIn } from '../auth/auth.js';
 
 export function renderLogin() {
     if (isLoggedIn()) {
@@ -39,19 +39,18 @@ export function renderLogin() {
         const rememberMe = document.getElementById('remember-me').checked; // Check if "Remember Me" is selected
 
         try {
-            // Авторизация пользователя
             const data = await loginUser({ email, password });
             alert('Авторизация успешна!');
             console.log('Token:', data.token);
 
-            // Сохраняем токен
             if (rememberMe) {
-                localStorage.setItem('token', data.token); // Save token persistently
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('id', data.user.id);
             } else {
-                sessionStorage.setItem('token', data.token); // Save token for the session
+                sessionStorage.setItem('token', data.token);
+                sessionStorage.setItem('id', data.user.id);
             }
 
-            // Перенаправляем на главную страницу
             window.history.pushState(null, null, '/general');
             window.dispatchEvent(new PopStateEvent('popstate'));
         } catch (error) {

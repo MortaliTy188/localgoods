@@ -7,7 +7,7 @@ export function renderGeneral() {
             <nav>
                 <ul class="nav-list">
                     <li><a href="/catalog" data-link>Catalog</a></li>
-                    <li><a href="/personal" data-link>Personal</a></li>
+                    <li><a href="/profile" data-link>Personal</a></li>
                     <li><a href="/cart" data-link>Cart</a></li>
                     <li><button id="logout-button" class="logout-button">Logout</button></li>
                 </ul>

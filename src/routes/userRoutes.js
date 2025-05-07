@@ -152,7 +152,7 @@ router.get('/all', authenticate([2]), getAllUsers);
  *       500:
  *         description: Ошибка сервера
  */
-router.get('/:id', authenticate([2]), getUserById);
+router.get('/:id', getUserById);
 
 /**
  * @swagger

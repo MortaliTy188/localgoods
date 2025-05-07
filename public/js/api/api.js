@@ -3,12 +3,18 @@ const API_BASE_URL = 'http://localhost:3000/api/v1';
 // Universal fetch function
 async function fetchAPI(endpoint, method = 'GET', body = null) {
     try {
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token'); // 1. Получаем токен
+
         const options = {
             method,
             headers: {
                 'Content-Type': 'application/json',
             },
         };
+
+        if (token) {
+            options.headers['Authorization'] = `Bearer ${token}`;
+        }
 
         if (body) {
             options.body = JSON.stringify(body);
@@ -17,10 +23,16 @@ async function fetchAPI(endpoint, method = 'GET', body = null) {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
 
         if (!response.ok) {
-            const error = await response.json();
+            if (response.status === 401 || response.status === 403) {
+                console.error('Ошибка авторизации, токен недействителен или отсутствует.');
+            }
+            const error = await response.json().catch(() => ({ message: response.statusText || 'Ошибка сервера (не JSON ответ)' }));
             throw new Error(error.message || 'Ошибка сервера');
         }
 
+        if (response.status === 204) {
+            return null;
+        }
         return await response.json();
     } catch (error) {
         console.error(`Ошибка при запросе к ${endpoint}:`, error);
