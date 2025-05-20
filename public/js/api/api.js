@@ -127,6 +127,10 @@ export async function createOrder(orderData) {
     return fetchAPI('/order/create', 'POST', orderData);
 }
 
+export async function getUserOrders() {
+    return fetchAPI('/orders');
+}
+
 // Reviews
 export async function addReview(reviewData) {
     return fetchAPI('/reviews/add', 'POST', reviewData);

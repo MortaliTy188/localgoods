@@ -4,6 +4,7 @@ export async function renderCatalog() {
     const app = document.getElementById('app');
     app.innerHTML = `
         <header>
+            <a href="/" data-link class="back-to-home-button" style="display: inline-block; margin-bottom: 10px; padding: 8px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">Back to Home</a>
             <h1>Categories</h1>
         </header>
         <main>
