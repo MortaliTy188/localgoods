@@ -1,17 +1,24 @@
 import { getUserById, updateUser, getUserOrders } from '../api/api.js';
-import { isLoggedIn } from '../auth/auth.js';
+import { isLoggedIn, getUserRole } from '../auth/auth.js';
+import { navigateTo } from '../router.js';
 
 export async function renderUserProfile() {
     if (!isLoggedIn()) {
-
-        window.history.pushState(null, null, '/login');
-        window.dispatchEvent(new PopStateEvent('popstate'));
+        navigateTo('/login');
         return;
     }
 
     const app = document.getElementById('app');
+    const userRole = getUserRole();
+
+    let addProductButtonHtml = '';
+    if (userRole === '2') {
+        addProductButtonHtml = `<button id="add-product-btn" style="margin-left: 10px;">Добавить товар</button>`;
+    }
+
     app.innerHTML = `
         <header>
+            <a href="/general" data-link class="back-to-home-button" style="display: inline-block; margin-bottom: 10px; padding: 8px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">Back to Shop</a>
             <h1>Личный кабинет</h1>
         </header>
         <main id="user-profile-container">
@@ -22,28 +29,31 @@ export async function renderUserProfile() {
                 <p><strong>Имя:</strong> <span id="user-first-name"></span></p>
                 <p><strong>Фамилия:</strong> <span id="user-last-name"></span></p>
                 <p><strong>Email:</strong> <span id="user-email"></span></p>
-                <button id="edit-profile-btn">Редактировать профиль</button>
-                <button id="view-orders-btn">Мои заказы</button> 
-                <button id="logout-btn">Выйти</button>
+                <div class="user-actions" style="margin-top: 15px;">
+                    <button id="edit-profile-btn">Редактировать профиль</button>
+                    <button id="view-orders-btn" style="margin-left: 10px;">Мои заказы</button>
+                    ${addProductButtonHtml}
+                    <button id="logout-btn" style="margin-left: 10px; background-color: #dc3545; color: white; border: none; border-radius: 4px; padding: 8px 15px; cursor: pointer;">Выйти</button>
+                </div>
             </div>
 
-            <form id="edit-profile-form" style="display: none;">
+            <form id="edit-profile-form" style="display: none; margin-top:20px; padding:20px; border:1px solid #ccc; border-radius:8px;">
                 <h2>Редактировать профиль</h2>
-                <div>
-                    <label for="edit-first-name">Имя:</label>
-                    <input type="text" id="edit-first-name" required>
+                <div style="margin-bottom: 10px;">
+                    <label for="edit-first-name" style="display:block; margin-bottom:5px;">Имя:</label>
+                    <input type="text" id="edit-first-name" required style="width:100%; padding:8px; box-sizing:border-box;">
                 </div>
-                <div>
-                    <label for="edit-last-name">Фамилия:</label>
-                    <input type="text" id="edit-last-name" required>
+                <div style="margin-bottom: 10px;">
+                    <label for="edit-last-name" style="display:block; margin-bottom:5px;">Фамилия:</label>
+                    <input type="text" id="edit-last-name" required style="width:100%; padding:8px; box-sizing:border-box;">
                 </div>
-                <div>
-                    <label for="edit-email">Email:</label>
-                    <input type="email" id="edit-email" required>
+                <div style="margin-bottom: 15px;">
+                    <label for="edit-email" style="display:block; margin-bottom:5px;">Email:</label>
+                    <input type="email" id="edit-email" required style="width:100%; padding:8px; box-sizing:border-box;">
                 </div>
                 
-                <button type="submit">Сохранить изменения</button>
-                <button type="button" id="cancel-edit-btn">Отмена</button>
+                <button type="submit" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Сохранить изменения</button>
+                <button type="button" id="cancel-edit-btn" style="margin-left: 10px; padding: 10px 15px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Отмена</button>
             </form>
 
             <div id="order-history-container" style="display: none; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 15px;">
@@ -64,9 +74,18 @@ export async function renderUserProfile() {
     const editProfileBtn = document.getElementById('edit-profile-btn');
     const cancelEditBtn = document.getElementById('cancel-edit-btn');
     const logoutBtn = document.getElementById('logout-btn');
-    const viewOrdersBtn = document.getElementById('view-orders-btn'); // New
-    const orderHistoryContainer = document.getElementById('order-history-container'); // New
-    const ordersListDiv = document.getElementById('orders-list-content'); // New
+    const viewOrdersBtn = document.getElementById('view-orders-btn');
+    const orderHistoryContainer = document.getElementById('order-history-container');
+    const ordersListDiv = document.getElementById('orders-list-content');
+
+    if (userRole === '2') {
+        const addProductBtn = document.getElementById('add-product-btn');
+        if (addProductBtn) {
+            addProductBtn.addEventListener('click', () => {
+                navigateTo('/add-product');
+            });
+        }
+    }
 
     const userId = localStorage.getItem('id') || sessionStorage.getItem('id');
 
@@ -76,9 +95,10 @@ export async function renderUserProfile() {
         sessionStorage.removeItem('token');
         localStorage.removeItem('id');
         sessionStorage.removeItem('id');
+        localStorage.removeItem('role');
+        sessionStorage.removeItem('role');
         setTimeout(() => {
-            window.history.pushState(null, null, '/login');
-            window.dispatchEvent(new PopStateEvent('popstate'));
+            navigateTo('/login');
         }, 2000);
         return;
     }
@@ -90,17 +110,16 @@ export async function renderUserProfile() {
             loadingMessage.style.display = 'block';
             userDetailsDiv.style.display = 'none';
             editProfileForm.style.display = 'none';
-            // orderHistoryContainer.style.display = 'none'; // Keep order history state or hide initially
 
             currentUserData = await getUserById(userId);
 
-            document.getElementById('user-first-name').textContent = currentUserData.first_name;
-            document.getElementById('user-last-name').textContent = currentUserData.last_name;
-            document.getElementById('user-email').textContent = currentUserData.email;
+            document.getElementById('user-first-name').textContent = currentUserData.first_name || 'N/A';
+            document.getElementById('user-last-name').textContent = currentUserData.last_name || 'N/A';
+            document.getElementById('user-email').textContent = currentUserData.email || 'N/A';
 
-            document.getElementById('edit-first-name').value = currentUserData.first_name;
-            document.getElementById('edit-last-name').value = currentUserData.last_name;
-            document.getElementById('edit-email').value = currentUserData.email;
+            document.getElementById('edit-first-name').value = currentUserData.first_name || '';
+            document.getElementById('edit-last-name').value = currentUserData.last_name || '';
+            document.getElementById('edit-email').value = currentUserData.email || '';
 
             loadingMessage.style.display = 'none';
             userDetailsDiv.style.display = 'block';
@@ -113,78 +132,80 @@ export async function renderUserProfile() {
 
     await fetchAndRenderUserData();
 
-    editProfileBtn.addEventListener('click', () => {
-        userDetailsDiv.style.display = 'none';
-        orderHistoryContainer.style.display = 'none';
-        editProfileForm.style.display = 'block';
-    });
+    if (editProfileBtn) {
+        editProfileBtn.addEventListener('click', () => {
+            userDetailsDiv.style.display = 'none';
+            orderHistoryContainer.style.display = 'none';
+            editProfileForm.style.display = 'block';
+        });
+    }
 
-    cancelEditBtn.addEventListener('click', () => {
-        editProfileForm.style.display = 'none';
-        userDetailsDiv.style.display = 'block';
-        if (currentUserData) {
-            document.getElementById('edit-first-name').value = currentUserData.first_name;
-            document.getElementById('edit-last-name').value = currentUserData.last_name;
-            document.getElementById('edit-email').value = currentUserData.email;
-        }
-    });
-
-    editProfileForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const updatedData = {
-            first_name: document.getElementById('edit-first-name').value,
-            last_name: document.getElementById('edit-last-name').value,
-            email: document.getElementById('edit-email').value,
-        };
-
-        try {
-            const submitButton = editProfileForm.querySelector('button[type="submit"]');
-            submitButton.textContent = 'Сохранение...';
-            submitButton.disabled = true;
-
-            await updateUser(userId, updatedData);
-            alert('Профиль успешно обновлен!');
-
-            await fetchAndRenderUserData();
-
+    if (cancelEditBtn) {
+        cancelEditBtn.addEventListener('click', () => {
             editProfileForm.style.display = 'none';
             userDetailsDiv.style.display = 'block';
-        } catch (error) {
-            alert(`Ошибка обновления профиля: ${error.message}`);
-            console.error('Ошибка при обновлении профиля:', error);
-        } finally {
+            if (currentUserData) {
+                document.getElementById('edit-first-name').value = currentUserData.first_name || '';
+                document.getElementById('edit-last-name').value = currentUserData.last_name || '';
+                document.getElementById('edit-email').value = currentUserData.email || '';
+            }
+        });
+    }
+
+    if (editProfileForm) {
+        editProfileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const updatedData = {
+                first_name: document.getElementById('edit-first-name').value,
+                last_name: document.getElementById('edit-last-name').value,
+                email: document.getElementById('edit-email').value,
+            };
             const submitButton = editProfileForm.querySelector('button[type="submit"]');
-            submitButton.textContent = 'Сохранить изменения';
-            submitButton.disabled = false;
-        }
-    });
+            try {
+                submitButton.textContent = 'Сохранение...';
+                submitButton.disabled = true;
+                await updateUser(userId, updatedData);
+                alert('Профиль успешно обновлен!');
+                await fetchAndRenderUserData();
+                editProfileForm.style.display = 'none';
+                userDetailsDiv.style.display = 'block';
+            } catch (error) {
+                alert(`Ошибка обновления профиля: ${error.message}`);
+                console.error('Ошибка при обновлении профиля:', error);
+            } finally {
+                submitButton.textContent = 'Сохранить изменения';
+                submitButton.disabled = false;
+            }
+        });
+    }
 
-    logoutBtn.addEventListener('click', () => {
-        localStorage.removeItem('token');
-        sessionStorage.removeItem('token');
-        localStorage.removeItem('id');
-        sessionStorage.removeItem('id');
-        alert('Вы успешно вышли из системы.');
-        window.history.pushState(null, null, '/login');
-        window.dispatchEvent(new PopStateEvent('popstate'));
-    });
-
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('token');
+            sessionStorage.removeItem('token');
+            localStorage.removeItem('id');
+            sessionStorage.removeItem('id');
+            localStorage.removeItem('role');
+            sessionStorage.removeItem('role');
+            alert('Вы успешно вышли из системы.');
+            navigateTo('/login');
+        });
+    }
 
     async function fetchAndRenderUserOrders() {
         try {
+            ordersListDiv.innerHTML = '<p>Загрузка истории заказов...</p>';
             const orders = await getUserOrders();
-            if (!orders || orders.length === 0) {
+            if (!orders || !Array.isArray(orders) || orders.length === 0) {
                 ordersListDiv.innerHTML = '<p>У вас пока нет заказов.</p>';
             } else {
-
                 ordersListDiv.innerHTML = `
                     <ul style="list-style: none; padding: 0;">
                         ${orders.map(order => `
-                            <li style="border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 4px;">
-                                <strong>Заказ ID:</strong> ${order.id} <br>
-                                <strong>Дата:</strong> ${new Date(order.created_at).toLocaleDateString('ru-RU')} <br> 
-                                <strong>Сумма:</strong> ${order.total_price} руб.
+                            <li style="border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 4px; background-color: #f9f9f9;">
+                                <p style="margin: 0 0 5px 0;"><strong>Заказ ID:</strong> ${order.id}</p>
+                                <p style="margin: 0 0 5px 0;"><strong>Дата:</strong> ${new Date(order.created_at).toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p> 
+                                <p style="margin: 0 0 5px 0;"><strong>Сумма:</strong> $${parseFloat(order.total_price || 0).toFixed(2)}</p>
                             </li>
                         `).join('')}
                     </ul>
@@ -196,19 +217,19 @@ export async function renderUserProfile() {
         }
     }
 
-    viewOrdersBtn.addEventListener('click', async () => {
+    if (viewOrdersBtn) {
+        viewOrdersBtn.addEventListener('click', async () => {
+            if (editProfileForm.style.display === 'block') {
+                editProfileForm.style.display = 'none';
+                userDetailsDiv.style.display = 'block';
+            }
 
-        if (editProfileForm.style.display === 'block') {
-            editProfileForm.style.display = 'none';
-            userDetailsDiv.style.display = 'block';
-        }
-
-        if (orderHistoryContainer.style.display === 'none' || orderHistoryContainer.style.display === '') {
-            orderHistoryContainer.style.display = 'block';
-            ordersListDiv.innerHTML = '<p>Загрузка истории заказов...</p>';
-            await fetchAndRenderUserOrders();
-        } else {
-            orderHistoryContainer.style.display = 'none';
-        }
-    });
+            if (orderHistoryContainer.style.display === 'none' || orderHistoryContainer.style.display === '') {
+                orderHistoryContainer.style.display = 'block';
+                await fetchAndRenderUserOrders();
+            } else {
+                orderHistoryContainer.style.display = 'none';
+            }
+        });
+    }
 }

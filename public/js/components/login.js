@@ -46,9 +46,11 @@ export function renderLogin() {
             if (rememberMe) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('id', data.user.id);
+                localStorage.setItem("role", data.user.role_id);
             } else {
                 sessionStorage.setItem('token', data.token);
                 sessionStorage.setItem('id', data.user.id);
+                localStorage.setItem('role', data.user.role_id);
             }
 
             window.history.pushState(null, null, '/general');

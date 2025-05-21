@@ -7,6 +7,12 @@ export function logout() {
     sessionStorage.removeItem('token');
     localStorage.removeItem('id');
     sessionStorage.removeItem('id');
+    localStorage.removeItem("role");
+    sessionStorage.removeItem("role");
     window.history.pushState(null, null, '/login');
     window.dispatchEvent(new PopStateEvent('popstate'));
+}
+
+export function getUserRole() {
+    return localStorage.getItem('role') || sessionStorage.getItem('role');
 }

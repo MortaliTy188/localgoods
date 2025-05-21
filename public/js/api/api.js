@@ -91,20 +91,26 @@ export async function getProductsByCategory(category_id) {
 }
 
 export async function uploadProductImage(formData) {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const headers = {};
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
     try {
         const response = await fetch(`${API_BASE_URL}/products/upload-image`, {
             method: 'POST',
             body: formData,
+            headers: headers
         });
 
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Ошибка загрузки изображения');
+            const errorData = await response.json().catch(() => ({ message: 'Server returned an error (not JSON)' }));
+            throw new Error(errorData.message || `Image upload failed with status: ${response.status}`);
         }
-
         return await response.json();
     } catch (error) {
-        console.error('Ошибка при загрузке изображения:', error);
+        console.error('Error uploading product image:', error);
         throw error;
     }
 }
