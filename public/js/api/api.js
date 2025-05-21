@@ -124,7 +124,7 @@ export async function removeFromCart(cartData) {
 
 // Orders
 export async function createOrder(orderData) {
-    return fetchAPI('/order/create', 'POST', orderData);
+    return fetchAPI('/orders/create', 'POST', orderData);
 }
 
 export async function getUserOrders() {
