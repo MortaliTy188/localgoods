@@ -127,6 +127,7 @@ async function showProductsByCategory(categoryId, allCategories) {
                                     <label for="${quantityInputId}" style="margin-right: 5px; ${hasProductImage ? '' : 'color: #333;'}">Qty:</label>
                                     <input type="number" id="${quantityInputId}" class="product-quantity-input" name="quantity" value="1" min="1" max="${product.stock || 99}" style="width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; text-align: center; margin-right: 10px;">
                                 </div>
+                                <p>Stock ${product.stock}</p>
                                 <p style="font-weight: bold; margin-bottom: 10px; font-size: 1.1em;">Total: <span id="${totalPriceDisplayId}">$${basePrice.toFixed(2)}</span></p>
                                 <button class="add-to-cart-btn" data-product-id="${product.id}" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%; margin-bottom: 10px; font-size: 1em;">Add to Cart</button>
                                 <button class="view-reviews-btn" data-product-id="${product.id}" style="padding: 10px 15px; background-color: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%; margin-bottom: 10px; font-size: 1em;">View Reviews</button>

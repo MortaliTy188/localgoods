@@ -1,4 +1,3 @@
-
 import { getCartItems, removeFromCart, createOrder, getProductById } from '../api/api.js';
 import { navigateTo } from '../router.js';
 
