@@ -11,9 +11,23 @@ export async function renderUserProfile() {
     const app = document.getElementById('app');
     const userRole = getUserRole();
 
-    let addProductButtonHtml = '';
-    if (userRole === '2') {
-        addProductButtonHtml = `<button id="add-product-btn" style="margin-left: 10px;">Добавить товар</button>`;
+    let sellerFunctionalityHtml = '';
+    let adminFunctionalityHtml = '';
+
+
+    if (userRole === '2' || userRole === '3') {
+        sellerFunctionalityHtml = `
+            <button id="add-product-btn" style="margin-left: 10px;">Добавить товар</button>
+            <button id="my-products-btn" style="margin-left: 10px;">Мои товары</button>
+        `;
+    }
+
+
+    if (userRole === '3') {
+        adminFunctionalityHtml = `
+            <button id="view-all-users-btn" style="margin-left: 10px;">Просмотр пользователей</button>
+            <button id="manage-categories-btn" style="margin-left: 10px;">Управление категориями</button> 
+        `;
     }
 
     app.innerHTML = `
@@ -32,10 +46,12 @@ export async function renderUserProfile() {
                 <div class="user-actions" style="margin-top: 15px;">
                     <button id="edit-profile-btn">Редактировать профиль</button>
                     <button id="view-orders-btn" style="margin-left: 10px;">Мои заказы</button>
-                    ${addProductButtonHtml}
+                    ${sellerFunctionalityHtml}
+                    ${adminFunctionalityHtml}
                     <button id="logout-btn" style="margin-left: 10px; background-color: #dc3545; color: white; border: none; border-radius: 4px; padding: 8px 15px; cursor: pointer;">Выйти</button>
                 </div>
             </div>
+
 
             <form id="edit-profile-form" style="display: none; margin-top:20px; padding:20px; border:1px solid #ccc; border-radius:8px;">
                 <h2>Редактировать профиль</h2>
@@ -68,6 +84,7 @@ export async function renderUserProfile() {
         </footer>
     `;
 
+
     const loadingMessage = document.getElementById('loading-message');
     const userDetailsDiv = document.getElementById('user-details');
     const editProfileForm = document.getElementById('edit-profile-form');
@@ -78,14 +95,46 @@ export async function renderUserProfile() {
     const orderHistoryContainer = document.getElementById('order-history-container');
     const ordersListDiv = document.getElementById('orders-list-content');
 
-    if (userRole === '2') {
+
+
+    if (userRole === '2' || userRole === '3') {
         const addProductBtn = document.getElementById('add-product-btn');
         if (addProductBtn) {
             addProductBtn.addEventListener('click', () => {
                 navigateTo('/add-product');
             });
         }
+
+        const myProductsBtn = document.getElementById('my-products-btn');
+        if (myProductsBtn) {
+            myProductsBtn.addEventListener('click', () => {
+                const currentUserId = localStorage.getItem('id') || sessionStorage.getItem('id');
+                if (currentUserId) {
+                    navigateTo(`/seller/${currentUserId}/products`);
+                } else {
+                    alert('Не удалось определить ID пользователя для просмотра товаров.');
+                }
+            });
+        }
     }
+
+
+    if (userRole === '3') {
+        const viewAllUsersBtn = document.getElementById('view-all-users-btn');
+        if (viewAllUsersBtn) {
+            viewAllUsersBtn.addEventListener('click', () => {
+                navigateTo('/admin/users');
+            });
+        }
+
+        const manageCategoriesBtn = document.getElementById('manage-categories-btn');
+        if (manageCategoriesBtn) {
+            manageCategoriesBtn.addEventListener('click', () => {
+                navigateTo('/admin/categories');
+            });
+        }
+    }
+
 
     const userId = localStorage.getItem('id') || sessionStorage.getItem('id');
 

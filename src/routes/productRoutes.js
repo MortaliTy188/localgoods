@@ -6,7 +6,7 @@ const {
     updateProduct,
     deleteProduct,
     getProductsByCategory,
-    uploadProductImage
+    uploadProductImage, getProductsBySeller
 } = require('../controllers/productController');
 const authenticate = require('../middlewares/authenticateJWT');
 const upload = require('../config/multer');
@@ -55,7 +55,7 @@ const router = express.Router();
  *       500:
  *         description: Ошибка сервера
  */
-router.post('/', authenticate([2]), createProduct);
+router.post('/', authenticate([2, 3]), createProduct);
 
 /**
  * @swagger
@@ -144,7 +144,7 @@ router.get('/:id', getProductById);
  *       500:
  *         description: Ошибка сервера
  */
-router.put('/:id', authenticate([2]), updateProduct);
+router.put('/:id', authenticate([2, 3]), updateProduct);
 
 /**
  * @swagger
@@ -169,7 +169,7 @@ router.put('/:id', authenticate([2]), updateProduct);
  *       500:
  *         description: Ошибка сервера
  */
-router.delete('/:id', authenticate([2]), deleteProduct);
+router.delete('/:id', authenticate([2, 3]), deleteProduct);
 
 /**
  * @swagger
@@ -227,5 +227,50 @@ router.get('/category/:category_id', getProductsByCategory);
  *         description: Ошибка сервера
  */
 router.post('/upload-image', upload.single('image'), uploadProductImage);
+
+/**
+ * @swagger
+ * /api/v1/products/seller/{seller_id}:
+ *   get:
+ *     summary: Получить все продукты указанного продавца
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: seller_id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID продавца, чьи товары нужно получить
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Список продуктов продавца успешно получен
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Товары найдены
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Некорректный запрос (например, ID продавца не является числом)
+ *       401:
+ *         description: Не авторизован
+ *       403:
+ *         description: Доступ запрещен
+ *       404:
+ *         description: Товары данного продавца не найдены
+ *       500:
+ *         description: Ошибка сервера
+ */
+
+router.get("/seller/:seller_id", authenticate([2, 3]), getProductsBySeller);
 
 module.exports = router;

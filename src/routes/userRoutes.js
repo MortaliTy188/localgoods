@@ -123,7 +123,7 @@ router.post('/login', loginUser);
  *       500:
  *         description: Ошибка сервера
  */
-router.get('/all', authenticate([2]), getAllUsers);
+router.get('/all', authenticate([3]), getAllUsers);
 
 /**
  * @swagger
@@ -194,7 +194,7 @@ router.get('/:id', getUserById);
  *       500:
  *         description: Ошибка сервера
  */
-router.put('/:id', authenticate([1, 2]), updateUser);
+router.put('/:id', authenticate([1, 2, 3]), updateUser);
 
 /**
  * @swagger
@@ -219,6 +219,6 @@ router.put('/:id', authenticate([1, 2]), updateUser);
  *       500:
  *         description: Ошибка сервера
  */
-router.delete('/:id', authenticate([2]), deleteUser);
+router.delete('/:id', authenticate([1, 2, 3]), deleteUser);
 
 module.exports = router;

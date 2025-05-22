@@ -1,7 +1,7 @@
-import { Router } from './router.js';
+import {initializeRouter} from "./router.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const app = document.getElementById('app');
 
-    Router();
+    initializeRouter();
 });

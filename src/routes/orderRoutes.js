@@ -115,6 +115,6 @@ router.post('/create', createOrder);
  *                   type: string
  *                   example: "Ошибка сервера при получении заказов"
  */
-router.get('/', authenticate([1,2]), getUserOrders);
+router.get('/', authenticate([1,2,3]), getUserOrders);
 
 module.exports = router;

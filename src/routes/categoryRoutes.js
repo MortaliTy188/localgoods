@@ -63,7 +63,7 @@ router.get('/all', getCategories);
  *       500:
  *         description: Ошибка сервера
  */
-router.post('/add', authenticate([2]), addCategory);
+router.post('/add', authenticate([3]), addCategory);
 
 /**
  * @swagger
@@ -102,7 +102,7 @@ router.post('/add', authenticate([2]), addCategory);
  *       500:
  *         description: Ошибка сервера
  */
-router.put('/update/:id', authenticate([2]), updateCategory);
+router.put('/update/:id', authenticate([3]), updateCategory);
 
 /**
  * @swagger
@@ -137,6 +137,6 @@ router.put('/update/:id', authenticate([2]), updateCategory);
  *       500:
  *         description: Ошибка сервера
  */
-router.delete('/delete/:id', authenticate([2]), deleteCategory);
+router.delete('/delete/:id', authenticate([3]), deleteCategory);
 
 module.exports = router;

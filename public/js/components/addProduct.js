@@ -75,7 +75,7 @@ export async function renderAddProductPage() {
 
 
     const userRole = getUserRole();
-    if (userRole !== '2') {
+    if (userRole !== '2' && userRole !== "3") {
         alert('Access Denied: You do not have permission to add products.');
         navigateTo('/profile');
         return;

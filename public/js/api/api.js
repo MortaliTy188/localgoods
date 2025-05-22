@@ -90,6 +90,10 @@ export async function getProductsByCategory(category_id) {
     return fetchAPI(`/products/category/${category_id}`);
 }
 
+export async function getProductsBySeller(sellerId) {
+    return fetchAPI(`/products/seller/${sellerId}`);
+}
+
 export async function uploadProductImage(formData) {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     const headers = {};

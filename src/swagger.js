@@ -64,6 +64,10 @@ const swaggerOptions = {
                             type: "integer",
                             description: "Количество на складе",
                         },
+                        seller_id: {
+                          type: "integer",
+                          description: "Id продавца",
+                        },
                         category: {
                             type: "string",
                             description: "Категория продукта",

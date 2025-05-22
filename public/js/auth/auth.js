@@ -16,3 +16,8 @@ export function logout() {
 export function getUserRole() {
     return localStorage.getItem('role') || sessionStorage.getItem('role');
 }
+
+export function getUserId() {
+    return localStorage.getItem('id') || sessionStorage.getItem('id');
+}
+

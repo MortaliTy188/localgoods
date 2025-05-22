@@ -157,3 +157,29 @@ exports.uploadProductImage = async (req, res) => {
         return res.status(500).json({ message: 'Ошибка сервера' });
     }
 };
+
+exports.getProductsBySeller = async (req, res) => {
+    const { seller_id } = req.params;
+
+    if (!seller_id) {
+        return res.status(400).json({ message: "ID продавца (seller_id) обязателен в пути запроса." });
+    }
+
+    try {
+        const products = await Product.findAll({
+            where: { seller_id: seller_id },
+        });
+
+        if (products.length === 0) {
+            return res.status(404).json({ message: "Товары данного продавца не найдены" });
+        }
+
+        return res.status(200).json({
+            message: "Товары найдены",
+            products,
+        });
+    } catch (error) {
+        console.error("Ошибка при получении товаров продавца:", error);
+        return res.status(500).json({ message: "Ошибка сервера при поиске товаров продавца" });
+    }
+};
